@@ -29,9 +29,9 @@ class ServCommeatController extends AbstractController
 			$password = $request->request->get("pass");
             $message = $request->request->get("message");
             if ($login=="root" && $password=="toor")
-            $message = "login et mot de passe correct";
+            $message = "login et mot de passe correct✅";
             else
-                $message = "ATTENTION : login et mot de passe incorrect";
+                $message = "ATTENTION : login et mot de passe incorrect⛔";
         return $this->render('serv_commeat/connexion.html.twig', [
             'login' => $login,
             'password' => $password,
