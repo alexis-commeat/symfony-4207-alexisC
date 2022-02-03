@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
 
 
 class ServCommeatController extends AbstractController
@@ -22,7 +23,7 @@ class ServCommeatController extends AbstractController
     /**
      * @Route("/connexion", name="connexion")
      */
-    public function connexion(Request $request): Response
+    public function connexion(Request $request,EntityManagerInterface $manager): Response
     {
 			//récupération des information du formulaire.
 			$login = $request->request->get("pseudo");
