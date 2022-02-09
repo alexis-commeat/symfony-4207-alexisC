@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}création nouvel utilisateur{% endblock %}
+
+{% block body %}
+
+<h1> <center>📍 Liste utilisateurs 📍 </center></h1>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Login : </th>
+      <th scope="col">Password : </th>
+    </tr>
+  </thead>
+{% for un_utilisateur in lst_utilisateurs %}
+
+  <tbody>
+    <tr class="table-info">
+      <th scope="row">{{ un_utilisateur.login }} </th>
+      <td>{{ un_utilisateur.password }} </td>
+    </tr>
+    </tbody>
+{% endfor %}
+
+
+{% endblock %}
