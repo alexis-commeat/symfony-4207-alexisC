@@ -89,13 +89,15 @@ public function supprimerU(EntityManagerInterface $manager,Utilisateurs $edituti
                 $session -> clear();
     }else {
                 $hash = $reponse -> getPassword();
-                if (password_verify($password, $hash))
+                if (password_verify($password, $hash)){
                     $message = "Connexion Reussie✅";
-                else
-                    $message = "ATTENTION : mot de passe incorrect⛔";
                     $session -> set('identifiant',$reponse -> getId() );
+                }else{
+                    $message = "ATTENTION : mot de passe incorrect⛔";
+                    
                     $session -> clear();
             }
+    }
 
         return $this->render('serv_commeat/connexion.html.twig', [
             'message'=> $message,
