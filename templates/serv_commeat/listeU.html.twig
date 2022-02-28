@@ -18,6 +18,7 @@
     <tr class="table-info">
       <th scope="row">{{ un_utilisateur.login }} </th>
       <td>{{ un_utilisateur.password }} </td>
+      <td><a href="/supprimerU/{{ un_utilisateur.id }}" > <input type="button" class="btn btn-danger" value="Supprimer"> </a></td>
     </tr>
     </tbody>
 {% endfor %}

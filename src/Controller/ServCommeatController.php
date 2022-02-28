@@ -7,7 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
-Use App\Entity\Utilisateurs;
+use App\Entity\Utilisateurs;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ServCommeatController extends AbstractController
 {
@@ -35,20 +36,37 @@ class ServCommeatController extends AbstractController
     /**
          * @Route("/listeU", name="listeU")
          */
-        public function listeU(EntityManagerInterface $manager): Response
+        public function listeU(EntityManagerInterface $manager, SessionInterface $session): Response
         {
-            $mesUtilisateurs=$manager->getRepository(Utilisateurs::class)->findAll();
-            return $this->render('serv_commeat/listeU.html.twig',['lst_utilisateurs' => $mesUtilisateurs]);      
+            $vs = $session -> get('identifiant');
+            if($vs==NULL)
+                return $this->redirectToRoute ('serv_commeat');
+            else{
+                $mesUtilisateurs=$manager->getRepository(Utilisateurs::class)->findAll();
+                return $this->render('serv_commeat/listeU.html.twig',['lst_utilisateurs' => $mesUtilisateurs]); 
+            }     
     }
 
+    
+/**
+* @Route("/supprimerU/{id}",name="supprimerU")
+*/
+public function supprimerU(EntityManagerInterface $manager,Utilisateurs $editutil): Response {
+    $manager->remove($editutil);
+    $manager->flush();
+    // Affiche de nouveau la liste des utilisateurs
+    return $this->redirectToRoute ('listeU');
+ }
+
+ 
     /**
          * @Route("/insertU", name="insertU")
          */
-        public function insertU(Request $request, EntityManagerInterface $manager): Response
+        public function insertU(Request $request, EntityManagerInterface $manager, SessionInterface $session): Response
         {
             $login = $request->request->get("pseudo");
 			$password = $request->request->get("pass");
-            $password = password_hash($password, PASSWORD_DEFAULT);
+            $password = password_hash($password,PASSWORD_DEFAULT);
             $monUtilisateur = new Utilisateurs ();
             $monUtilisateur -> setlogin($login);
             $monUtilisateur -> setpassword($password);
@@ -60,20 +78,25 @@ class ServCommeatController extends AbstractController
     /**
      * @Route("/connexion", name="connexion")
      */
-    public function connexion(Request $request, EntityManagerInterface $manager): Response
+    public function connexion(Request $request, SessionInterface $session, EntityManagerInterface $manager): Response
     {
 			//récupération des information du formulaire.
 			$login = $request->request->get("pseudo");
 			$password = $request->request->get("pass");
             $reponse = $manager -> getRepository(Utilisateurs :: class) -> findOneBy([ 'login' => $login]);
-            if($reponse==NULL)
+            if($reponse==NULL){
                 $message="utilisateur inconnu";
-            else
+                $session -> clear();
+    }else {
                 $hash = $reponse -> getPassword();
-                if (password_verify($password,$hash))
-                    $message = "login et mot de passe correct✅";
-            else
-                $message = "ATTENTION : mot de passe incorrect⛔";
+                if (password_verify($password, $hash))
+                    $message = "Connexion Reussie✅";
+                else
+                    $message = "ATTENTION : mot de passe incorrect⛔";
+                    $session -> set('identifiant',$reponse -> getId() );
+                    $session -> clear();
+            }
+
         return $this->render('serv_commeat/connexion.html.twig', [
             'message'=> $message,
             'login'=> $login,
