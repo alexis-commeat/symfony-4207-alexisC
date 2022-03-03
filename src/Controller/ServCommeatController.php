@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateurs;
+use App\Entity\Document;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ServCommeatController extends AbstractController
@@ -22,6 +23,40 @@ class ServCommeatController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/ajoutFichier", name="ajoutFichier")
+     */
+    public function ajoutFichier(): Response
+    {
+        return $this->render('/ajoutFichier.html.twig', [
+            'controller_name' => 'ServCommeatController',
+        ]);
+    }
+
+     /**
+     * @Route("/insertF", name="insertF")
+     */
+    public function insertF(): Response
+    {
+        $tmp_name = $_FILES["ajoutFichier"]["tmp_name"];
+        $name = basename($_FILES["ajoutFichier"]["name"]);
+        move_uploaded_file($tmp_name, "home/etudrt/servcommeat/public/$name");
+        return $this->render('/ajoutFichier.html.twig');
+    }
+
+    /**
+    * @Route("/listeF", name="listeF")
+    */
+   public function listeF(EntityManagerInterface $manager, SessionInterface $session): Response
+   {
+       $vs = $session -> get('identifiant');
+       if($vs==NULL)
+           return $this->redirectToRoute ('serv_commeat');
+       else{
+           $mesDocument=$manager->getRepository(Document::class)->findAll();
+           return $this->render('/listeF.html.twig',['lst_document' => $mesDocument]); 
+       }     
+}
 
         /**
          * @Route("/newU", name="newU")
@@ -32,6 +67,16 @@ class ServCommeatController extends AbstractController
                 'controller_name' => 'ServCommeatController',
             ]);
     }
+
+    
+    /**
+         * @Route("/Deconnexion", name="Deconnexion")
+         */
+        public function Deconnexion(EntityManagerInterface $manager, SessionInterface $session): Response
+        {
+        $session->clear();
+        return $this->redirectToRoute ('serv_commeat');
+        }
 
     /**
          * @Route("/listeU", name="listeU")
