@@ -28,35 +28,21 @@ class ServCommeatController extends AbstractController
      */
     public function ajoutFichier(): Response
     {
-        return $this->render('/ajoutFichier.html.twig', [
-            'controller_name' => 'ServCommeatController',
-        ]);
+        return $this->render('/ajoutFichier.html.twig');
     }
 
-     /**
+    /**
      * @Route("/insertF", name="insertF")
      */
     public function insertF(): Response
     {
         $tmp_name = $_FILES["ajoutFichier"]["tmp_name"];
         $name = basename($_FILES["ajoutFichier"]["name"]);
-        move_uploaded_file($tmp_name, "home/etudrt/servcommeat/public/$name");
+        move_uploaded_file($tmp_name, "home/etudrt/servCommeat/public/$name");
         return $this->render('/ajoutFichier.html.twig');
     }
 
-    /**
-    * @Route("/listeF", name="listeF")
-    */
-   public function listeF(EntityManagerInterface $manager, SessionInterface $session): Response
-   {
-       $vs = $session -> get('identifiant');
-       if($vs==NULL)
-           return $this->redirectToRoute ('serv_commeat');
-       else{
-           $mesDocument=$manager->getRepository(Document::class)->findAll();
-           return $this->render('/listeF.html.twig',['lst_document' => $mesDocument]); 
-       }     
-}
+
 
         /**
          * @Route("/newU", name="newU")
@@ -119,6 +105,20 @@ public function supprimerU(EntityManagerInterface $manager,Utilisateurs $edituti
             $manager -> flush ();
             return $this->redirectToRoute ('listeU');
     }
+
+        /**
+    * @Route("/listeF", name="listeF")
+    */
+   public function listeF(EntityManagerInterface $manager, SessionInterface $session): Response
+   {
+       $vs = $session -> get('identifiant');
+       if($vs==NULL)
+           return $this->redirectToRoute ('serv_commeat');
+       else{
+           $mesDocument=$manager->getRepository(Document::class)->findAll();
+           return $this->render('/listeF.html.twig',['lst_document' => $mesDocument]); 
+       }     
+}
 
     /**
      * @Route("/connexion", name="connexion")
